@@ -12,7 +12,7 @@ extension Date {
         let formatter = DateFormatter()
         formatter.locale = Locale.current
         formatter.dateStyle = .short
-        formatter.timeStyle = .none
+        formatter.timeStyle = .short
         return formatter.string(from: self)
     }
 }

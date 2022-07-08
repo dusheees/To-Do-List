@@ -122,7 +122,7 @@
                                     <rect key="frame" x="0.0" y="0.0" width="414" height="238.5"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
-                                        <datePicker contentMode="scaleToFill" placeholderIntrinsicWidth="374" placeholderIntrinsicHeight="216.5" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="wheels" translatesAutoresizingMaskIntoConstraints="NO" id="HRn-aG-NmC" customClass="SectionDatePicker" customModule="To_Do_List" customModuleProvider="target">
+                                        <datePicker contentMode="scaleToFill" placeholderIntrinsicWidth="374" placeholderIntrinsicHeight="216.5" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="dateAndTime" style="wheels" translatesAutoresizingMaskIntoConstraints="NO" id="HRn-aG-NmC" customClass="SectionDatePicker" customModule="To_Do_List" customModuleProvider="target">
                                             <rect key="frame" x="20" y="11" width="374" height="216.5"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" priority="750" constant="216" id="SfA-UA-hWI"/>
@@ -137,7 +137,7 @@
                                     </constraints>
                                 </tableViewCellContentView>
                                 <connections>
-                                    <outlet property="datePicker" destination="HRn-aG-NmC" id="gLk-8q-9dP"/>
+                                    <outlet property="datePicker" destination="HRn-aG-NmC" id="miV-WK-XHV"/>
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="ImageCell" id="nca-So-muK" customClass="ImageCell" customModule="To_Do_List" customModuleProvider="target">
