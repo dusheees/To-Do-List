@@ -13,3 +13,5 @@ To Do List for MDA
 ![Screenshot05](https://github.com/dusheees/To-Do-List/blob/main/To%20Do%20List/Screenshots/Screenshot05.png?raw=true)
 
 ![Screenshot06](https://github.com/dusheees/To-Do-List/blob/main/To%20Do%20List/Screenshots/Screenshot06.png?raw=true)
+
+![Screenshot07](https://github.com/dusheees/To-Do-List/blob/main/To%20Do%20List/Screenshots/Screenshot07.png?raw=true)
