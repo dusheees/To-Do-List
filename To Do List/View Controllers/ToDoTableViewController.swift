@@ -6,10 +6,13 @@
 //
 
 import UIKit
+import UserNotifications
 
 class ToDoTableViewController: UITableViewController {
     
     let dataManager = DataManager()
+    let notificationCenter = UNUserNotificationCenter.current()
+    
     var todos = [ToDo]() {
         didSet {
             dataManager.saveToDos(todos)
@@ -25,6 +28,14 @@ class ToDoTableViewController: UITableViewController {
             ToDo(title: "Подготовить питч", image: UIImage(named: "pitch")!),
         ]
         navigationItem.leftBarButtonItem = editButtonItem
+        
+        notificationCenter.requestAuthorization(options: [.alert, .sound]) {
+            (permissionGranted, error) in
+            if(!permissionGranted)
+            {
+                print("Permission Denied")
+            }
+        }
     }
     
     // MARK: - UITableViewDataSource
@@ -134,6 +145,12 @@ class ToDoTableViewController: UITableViewController {
     @IBAction func unwind(_ segue: UIStoryboardSegue) {
         guard segue.identifier == "SaveSegue" else { return }
         let source = segue.source as! ToDoItemTableViewController
+        for index in 0 ..< source.todo.keys.count {
+            let value = source.todo.values[index]
+            if let dateValue = value as? Date {
+                sendNotifications(dateValue: dateValue, todo: source.todo)
+            }
+        }
         guard let selectedIndex = tableView.indexPathForSelectedRow else {
             todos.append(source.todo)
             tableView.reloadData()
@@ -148,6 +165,66 @@ class ToDoTableViewController: UITableViewController {
                 }
             }
         }
+
         tableView.reloadRows(at: [selectedIndex], with: .automatic)
+    }
+}
+
+// MARK: - Notifications
+extension ToDoTableViewController {
+    func sendNotifications(dateValue: Date, todo: ToDo) {
+        notificationCenter.getNotificationSettings { (settings) in
+            
+            DispatchQueue.main.async
+            {
+                let title = "To Do List"
+                let message = todo.title
+                let date = dateValue
+                print(date)
+                
+                if(settings.authorizationStatus == .authorized)
+                {
+                    let content = UNMutableNotificationContent()
+                    content.title = title
+                    content.body = message
+                    
+                    let dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
+                    
+                    let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
+                    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
+                    
+                    self.notificationCenter.add(request) { (error) in
+                        if(error != nil)
+                        {
+                            print("Error " + error.debugDescription)
+                            return
+                        }
+                    }
+                    let ac = UIAlertController(title: "Уведомление запланировано", message: "На " + date.formatedDate, preferredStyle: .alert)
+                    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                }
+                else
+                {
+                    let ac = UIAlertController(title: "Разрешить уведомления?", message: "Чтобы использовать эту функцию, вы должны включить уведомления в настройках", preferredStyle: .alert)
+                    let goToSettings = UIAlertAction(title: "Настройки", style: .default)
+                    { (_) in
+                        guard let setttingsURL = URL(string: UIApplication.openSettingsURLString)
+                        else
+                        {
+                            return
+                        }
+                        
+                        if(UIApplication.shared.canOpenURL(setttingsURL))
+                        {
+                            UIApplication.shared.open(setttingsURL) { (_) in}
+                        }
+                    }
+                    ac.addAction(goToSettings)
+                    ac.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in}))
+                    self.present(ac, animated: true)
+                }
+            }
+        }
     }
 }

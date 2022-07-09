@@ -6,23 +6,10 @@
 //
 
 import UIKit
-import UserNotifications
 
 class ToDoItemTableViewController: UITableViewController {
     // MARK: - Properties
     var todo = ToDo()
-    let notificationCenter = UNUserNotificationCenter.current()
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        notificationCenter.requestAuthorization(options: [.alert, .sound]) {
-            (permissionGranted, error) in
-            if(!permissionGranted)
-            {
-                print("Permission Denied")
-            }
-        }
-    }
 }
 
 // MARK: - UITableViewDataSource
@@ -176,9 +163,7 @@ extension ToDoItemTableViewController {
 // MARK: - Action
 extension ToDoItemTableViewController {
     @objc func datePickerValueChanged(_ sender: SectionDatePicker) {
-        
-        sendNotifications(sender: sender)
-        
+    
         let section = sender.section!
         let key = todo.keys[section]
         let date = sender.date
@@ -245,65 +230,6 @@ extension ToDoItemTableViewController {
                 navigationItem.rightBarButtonItem?.isEnabled = true
             } else if text == "" {
                 navigationItem.rightBarButtonItem?.isEnabled = false
-            }
-        }
-    }
-}
-
-// MARK: - Notifications
-extension ToDoItemTableViewController {
-    func sendNotifications(sender: SectionDatePicker) {
-        notificationCenter.getNotificationSettings { (settings) in
-            
-            DispatchQueue.main.async
-            {
-                let title = "To Do List"
-                let message = self.todo.title
-                let date = sender.date
-                print(date)
-                
-                if(settings.authorizationStatus == .authorized)
-                {
-                    let content = UNMutableNotificationContent()
-                    content.title = title
-                    content.body = message
-                    
-                    let dateComp = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: date)
-                    
-                    let trigger = UNCalendarNotificationTrigger(dateMatching: dateComp, repeats: false)
-                    let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: trigger)
-                    
-                    self.notificationCenter.add(request) { (error) in
-                        if(error != nil)
-                        {
-                            print("Error " + error.debugDescription)
-                            return
-                        }
-                    }
-                    let ac = UIAlertController(title: "Уведомление запланировано", message: "На " + date.formatedDate, preferredStyle: .alert)
-                    ac.addAction(UIAlertAction(title: "OK", style: .default, handler: { (_) in}))
-                    self.present(ac, animated: true)
-                }
-                else
-                {
-                    let ac = UIAlertController(title: "Разрешить уведомления?", message: "Чтобы использовать эту функцию, вы должны включить уведомления в настройках", preferredStyle: .alert)
-                    let goToSettings = UIAlertAction(title: "Настройки", style: .default)
-                    { (_) in
-                        guard let setttingsURL = URL(string: UIApplication.openSettingsURLString)
-                        else
-                        {
-                            return
-                        }
-                        
-                        if(UIApplication.shared.canOpenURL(setttingsURL))
-                        {
-                            UIApplication.shared.open(setttingsURL) { (_) in}
-                        }
-                    }
-                    ac.addAction(goToSettings)
-                    ac.addAction(UIAlertAction(title: "Cancel", style: .default, handler: { (_) in}))
-                    self.present(ac, animated: true)
-                }
             }
         }
     }
